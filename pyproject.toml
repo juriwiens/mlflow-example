@@ -9,7 +9,6 @@ packages = [{include = "mlflow_example"}]
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 tensorflow = "^2.8.0"
-numpy = "^1.22.3"
 pandas = "^1.4.1"
 mlflow = "^1.24.0"
 
