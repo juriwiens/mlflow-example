@@ -9,3 +9,7 @@ Install dependencies via [poetry](https://python-poetry.org/):
 ```shell
 poetry install
 ```
+
+## MLflow Tracking
+
+When [train.py](./train.py) is executed, the training progress is logged as an experiment run via [automatic logging](https://www.mlflow.org/docs/latest/tracking.html#tensorflow-and-keras).
