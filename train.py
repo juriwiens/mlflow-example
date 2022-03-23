@@ -13,9 +13,12 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import IntegerLookup
 from tensorflow.keras.layers import Normalization
 from tensorflow.keras.layers import StringLookup
+import mlflow.tensorflow
 
 
 def main():
+    mlflow.tensorflow.autolog()
+
     train_ds, val_ds = prepare_data()
     model = build_model(train_ds)
     model.fit(train_ds, epochs=50, validation_data=val_ds)
