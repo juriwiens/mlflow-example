@@ -21,6 +21,8 @@ import typer
 def main(batch_size: int = 32, epochs: int = 50, units: int = 32, dropout: float = 0.5):
     print("MLflow tracking URI:", mlflow.get_tracking_uri())
     mlflow.tensorflow.autolog()
+    mlflow.log_param("units", units)
+    mlflow.log_param("dropout", dropout)
 
     train_ds, val_ds = prepare_data(batch_size)
     model = build_model(units, dropout, train_ds)
