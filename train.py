@@ -13,18 +13,21 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import IntegerLookup
 from tensorflow.keras.layers import Normalization
 from tensorflow.keras.layers import StringLookup
+import mlflow
 import mlflow.tensorflow
+import typer
 
 
-def main():
+def main(batch_size: int = 32, epochs: int = 50, units: int = 32, dropout: float = 0.5):
+    print("MLflow tracking URI:", mlflow.get_tracking_uri())
     mlflow.tensorflow.autolog()
 
-    train_ds, val_ds = prepare_data()
-    model = build_model(train_ds)
-    model.fit(train_ds, epochs=50, validation_data=val_ds)
+    train_ds, val_ds = prepare_data(batch_size)
+    model = build_model(units, dropout, train_ds)
+    model.fit(train_ds, epochs=epochs, validation_data=val_ds)
 
 
-def prepare_data():
+def prepare_data(batch_size: int):
     file_url = "http://storage.googleapis.com/download.tensorflow.org/data/heart.csv"
     dataframe = pd.read_csv(file_url)
     print(dataframe.head())
@@ -36,13 +39,13 @@ def prepare_data():
         % (len(train_dataframe), len(val_dataframe))
     )
 
-    train_ds = dataframe_to_dataset(train_dataframe).batch(32)
-    val_ds = dataframe_to_dataset(val_dataframe).batch(32)
+    train_ds = dataframe_to_dataset(train_dataframe).batch(batch_size)
+    val_ds = dataframe_to_dataset(val_dataframe).batch(batch_size)
 
     return train_ds, val_ds
 
 
-def build_model(train_ds):
+def build_model(units: int, dropout: float, train_ds):
     # Categorical features encoded as integers
     sex = keras.Input(shape=(1,), name="sex", dtype="int64")
     cp = keras.Input(shape=(1,), name="cp", dtype="int64")
@@ -114,8 +117,8 @@ def build_model(train_ds):
             oldpeak_encoded,
         ]
     )
-    x = layers.Dense(32, activation="relu")(all_features)
-    x = layers.Dropout(0.5)(x)
+    x = layers.Dense(units, activation="relu")(all_features)
+    x = layers.Dropout(dropout)(x)
     output = layers.Dense(1, activation="sigmoid")(x)
     model = keras.Model(all_inputs, output)
     model.compile("adam", "binary_crossentropy", metrics=["accuracy"])
@@ -165,4 +168,4 @@ def encode_categorical_feature(feature, name, dataset, is_string):
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)
