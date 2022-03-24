@@ -1,5 +1,6 @@
 # MLflow runs
 mlruns/
+mlflow.db
 
 # START of original python .gitignore
 
